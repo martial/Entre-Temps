@@ -11,22 +11,48 @@
 
 #include "ofMain.h"
 #include "ofxTimer.h"
+#include "ofxXmlSettings.h"
+#include "timeData.h"
+#include "ofxTimeUtils.h"
 
 class timeManager {
     
 public:
     
-    void    setup();
-    long     update();
+    void        setup();
+    void        parseXml();
     
-    long     getSecondsElapsedBetween(long startingTime, long endingTime);
-    float   getPctElapsedBetween(long startingTime, long endingTime);
     
-    long      currentUnixTime;
-    int       currentMonth, currentHour;
+    long        update();
+    
+    long        getSecondsElapsedBetween(long startingTime, long endingTime);
+    float       getPctElapsedBetween(long startingTime, long endingTime);
+    
+    int         getDaysBetween(long startingTime, long EndingTime);
+    int         getNumOfDays(long numOfSeconds);
+    
+    int         getNumOfNonWorkingsSecondsFor(int month, int day);
+    
+    timeData   *getTimeDataOf(int month, int day);
+    
+    long        currentUnixTime;
+    int         currentMonth, currentDay, currentHour, currentMinut;
+    
+    bool        isOnline();
+    
+    bool        bOnline;
+    
+    long        remainingSeconds;
+    
+    float       particleStepInSec;
     
 private:
     
+    
+    
+    ofxXmlSettings      hoursXml;
+    vector<timeData*>   workingTimeData;
+    ofxTimeUtils        timeUtils;
     
 };
 

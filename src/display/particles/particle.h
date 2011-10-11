@@ -43,7 +43,16 @@ public:
     bool    isFixed;
     int     id;
     
+    // 
+    float   underShockTime;
+    int   underShockCount;
+    bool    bIsUnderShock;
+    
+    bool    bTestPoly;
+    
     particleManager  * mom;
+    
+    float highestPos;
     
 };
 

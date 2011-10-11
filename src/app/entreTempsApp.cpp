@@ -12,6 +12,7 @@ void entreTempsApp::setup() {
     
     flash.setup();
     data.setup(&flash);
+    time.setup();
     
     timer.setup(20, true);
     ofAddListener(timer.TIMER_REACHED, this, &entreTempsApp::onMainTimer);
@@ -26,69 +27,92 @@ void entreTempsApp::setup() {
     
 }
 void entreTempsApp::update() {
-    
+    if(!time.bOnline) return;
     flash.update();
     silos.update();
     
 }
 void entreTempsApp::draw() {
+    if(!time.bOnline) return;
+    
+    ofPushMatrix();
+    ofTranslate(294, 214 - 1);
     silos.draw();
     
-  
+   // drawDebug();
+    ofPopMatrix();
+    
+}
+
+void entreTempsApp::drawDebug() {
+    
+    
+    ofSetColor(255, 255, 255);
+    
+    ofDrawBitmapString(ofToString(time.currentDay) + "/" + ofToString(time.currentMonth) + " " + ofToString(time.currentHour) + ":" + ofToString(time.currentMinut), 0, 70);
+    ofDrawBitmapString(ofToString(pct) +"%", 0, 85);
+    
+    int numOfMnByPixel =  floor(time.particleStepInSec / 60.0);
+    int numOfSecondsByPixel = time.particleStepInSec - ( numOfMnByPixel * 60);
+    
+    ofDrawBitmapString("Pixel every " + ofToString( numOfMnByPixel) +" mn " + ofToString(numOfSecondsByPixel) +" sc", 0, 100);
+    
+    
+    
 }
 
 void entreTempsApp::onMainTimer(int & e) {
         
     data.update(time.update());
-    
+    if(!time.bOnline) return;
    
-    // TODO not working..
     eventData * nextEventData = data.getNextEventData();
     if(!nextEventData) return;
     
-     //ofLog(OF_LOG_NOTICE, "Next event data is " + nextEventData->name);
     
     if (nextEventData->isRunning) {
-        //ofLog(OF_LOG_NOTICE, "seems like one is running. Hrmpfd");
         pct = 1.0;
     } else {
 		pct = time.getPctElapsedBetween(data.getFinishedEventData()->getEndingTime(), data.getNextEventData()->posixTime);
     }
     
-   // printf("allo");
     
     
-    silos.setMainColor(nextEventData->typeColor);
     
+    // stable
+    
+    
+    
+     silos.setMainColor(data.getColorForSilo(nextEventData->typeID));
+   
       
     
-    if ( pct >= silos.getPctLoaded() && pct <= silos.getNextPct() ) {
+    if ( pct >= silos.getPctLoaded() && pct < silos.getNextPct() ) {
         // stable
         
-        //ofLog(OF_LOG_NOTICE, "Stable man! ");
         
     } else {
    
     
         if ( silos.getPctLoaded() < pct ) {
-            silos.addRandomParticle();
+            silos.addRandomParticle(nextEventData->siloNumber);
             return;
             //ofLog(OF_LOG_NOTICE, "Add ptc! ");
         } 
         
         if (  silos.getNextPct() > pct) {
-            silos.deleteRandomParticle();
-            ofLog(OF_LOG_NOTICE, "Delete ptc! ");
+            
+            silos.setMainColor(data.getColorForSilo(data.getFinishedEventData()->typeID));
+            silos.deleteRandomParticle(nextEventData->siloNumber);
+            return;
         }
         
     }
         
     
     
-   
     
    
-    //ofLog(OF_LOG_NOTICE, "pct to go elapsed : %f - silos pct %f - next Pct %f", pct, silos.getPctLoaded(), silos.getNextPct() );
     
 }
 

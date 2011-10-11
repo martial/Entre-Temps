@@ -21,10 +21,9 @@ public:
     void draw();
     
     void onMainTimer();
-    void addRandomParticle();
-    void deleteRandomParticle();
-    void setMainColor(int color);
-        
+    void addRandomParticle(string siloNumber);
+    void deleteRandomParticle(string siloNumber);
+    void setMainColor(vector<ofColor*> * colors);
     
     
     float getPctLoaded();
@@ -39,6 +38,10 @@ public:
     int             sens;
     
     float           width, height;
+    
+    int             totalPixels;
+    int             currentSilo;
+    
 };
 
 

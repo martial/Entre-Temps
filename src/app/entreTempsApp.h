@@ -27,6 +27,8 @@ public:
     
     void onMainTimer(int & e);
     
+    void drawDebug();
+    
     silosManager        silos;
     
     float pct;

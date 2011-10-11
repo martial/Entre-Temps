@@ -11,8 +11,49 @@
 void dataManager::setup(flashUdpManager * flash){
     this->flash = flash;
     ofAddListener(flash->xmlEvt, this, &dataManager::onXmlReceived);
-        
+    
+    createColors();
     loadLocalXml();
+    
+    
+}
+
+void dataManager::createColors () {
+    
+    
+    vector<ofColor*> colors0;
+    vector<ofColor*> colors1;
+    vector<ofColor*> colors2;
+    vector<ofColor*> colors3;
+    vector<ofColor*> colors4;
+    
+    colors0.push_back(new ofColor(0,67,255));
+    colors0.push_back(new ofColor(255,238,0));
+    colors0.push_back(new ofColor(255,70, 67));
+    
+    colors1.push_back(new ofColor(255,78,0));
+    colors1.push_back(new ofColor(249,121,0));
+    colors1.push_back(new ofColor(255,182,0));
+    
+    colors2.push_back(new ofColor(255,255,255));
+    colors2.push_back(new ofColor(255,248,47));
+    colors2.push_back(new ofColor(194,255,0));
+    
+    colors3.push_back(new ofColor(247,105,1));
+    colors3.push_back(new ofColor(255,0,0));
+    colors3.push_back(new ofColor(255,51,68));
+    
+    colors4.push_back(new ofColor(0, 115, 199));
+    colors4.push_back(new ofColor(0,241,255));
+    colors4.push_back(new ofColor(0,0,243));
+    
+
+    colors.push_back(colors0);
+    colors.push_back(colors1);
+    colors.push_back(colors2);
+    colors.push_back(colors3);
+    colors.push_back(colors4);
+    
     
 }
 
@@ -87,6 +128,9 @@ void dataManager::parseXml() {
         evtData->duration = xml.getValue("duration", 0);
         evtData->typeID = xml.getValue("typeID", 0);
         evtData->typeColor = xml.getValue("typeColor", 0);
+        
+        evtData->siloNumber = xml.getValue("siloIndex", "012");
+        
         events.push_back(evtData);
         
         xml.popTag();
@@ -98,7 +142,6 @@ void dataManager::parseXml() {
     xml.popTag();
     xml.popTag();
     
-    ofLog(OF_LOG_NOTICE, "there are %d events", events.size());
     
     
 }
@@ -128,5 +171,18 @@ eventData * dataManager::getFinishedEventData () {
         if(events[i]->isFinished) return events[i];
     }
     return NULL;
+}
+
+
+ofColor * dataManager::getColorForSilo(int typeID, int siloIndex) {
+        
+    return colors[typeID][siloIndex];
+       
+}
+
+vector<ofColor*> * dataManager::getColorForSilo(int typeID) {
+        
+    return &colors[typeID];
+
 }
 

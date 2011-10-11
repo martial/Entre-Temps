@@ -5,12 +5,14 @@
 //--------------------------------------------------------------
 void testApp::setup(){
     
-    //ofSetBackgroundAuto(true);
-    //ofBackgroundHex(0x000000);
-    //ofSetVerticalSync(true);
+
+    
+    ofSetVerticalSync(true);
     ofSetFrameRate(60);
-    ofLogLevel(OF_LOG_NOTICE);
-     ofLog(OF_LOG_NOTICE, "setup...");
+    ofSetLogLevel(OF_LOG_NOTICE);
+    
+    
+    ofLog(OF_LOG_NOTICE, "setup...");
 	app = new entreTempsApp();
     app->setup();
     
@@ -22,7 +24,6 @@ void testApp::setup(){
 //--------------------------------------------------------------
 void testApp::update(){
     app->update();
-    ofLog(OF_LOG_NOTICE, "updateing...");
 }
 
 //--------------------------------------------------------------
@@ -30,12 +31,8 @@ void testApp::draw(){
 	
 	
 	ofBackgroundHex(0x000000, 1);
-	
-     ofLog(OF_LOG_NOTICE, "draw...");
     app->draw();
-    
-    ofSetColor(255,0,0);
-   // ofRect(c++,0,10,10);
+
 }
 
 //--------------------------------------------------------------

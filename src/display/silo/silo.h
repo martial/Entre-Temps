@@ -19,7 +19,6 @@ public:
     void update();
     void draw();
     
-    int  getNumOfPixels();
     int  getRandomPoint();
     void addRandomPoint();
     

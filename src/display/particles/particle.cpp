@@ -25,6 +25,7 @@ void particle::setup (particleManager * mom, float x, float y) {
     
     pos.set((float)x, (float)y);
     vel.set(0,0);
+    frc.set(0,0);
     
     color.r = 255;
     color.g = 255;
@@ -33,9 +34,17 @@ void particle::setup (particleManager * mom, float x, float y) {
     
     isFixed = false;
     
-    damping = .5;
+    damping = 0.3;
     
-}
+    underShockTime = 30;
+    underShockCount = 0;
+    bIsUnderShock = false;
+    
+    highestPos = mom->getNextHighestYPos(pos.x, this)-1;
+    
+    bTestPoly = false;
+   
+   }
 
 void particle::resetForce(){
     frc.set(0,0);	
@@ -98,18 +107,20 @@ void particle::addDampingForce(){
 
 void particle::checkCollision () {
    
-     if(isFixed) return;
+    if(isFixed) return;
     
-    float highestPos = mom->getNextHighestYPos(pos.x, this) -1.0;
-        
+    
+    
     if(pos.y >= highestPos  ) {
                 
         pos.y =   highestPos;
         isFixed = true;
-        color.r = 0;
-        color.g = 255;
-        color.b = 0;
-        //ofLog(OF_LOG_NOTICE, "bingo! %d", highestPos);
+       
+        
+        underShockCount = 0;
+        bIsUnderShock = true;
+        color.setSaturation(500);
+        
     }
         
 }
@@ -123,9 +134,7 @@ void particle::checkCollision (ofVec2f pnt) {
     
     if(isFixed) return;
     
-    
-   
-    
+        
     if ( !isFixed && pos.x == pnt.x  ) {
         
         // we're on same x
@@ -134,11 +143,11 @@ void particle::checkCollision (ofVec2f pnt) {
         if ( pos.y >= pnt.y ) {
             pos.y = pnt.y;
             isFixed = true;
-            color.r = 255;
-            color.g = 0;
-            color.b = 0;
+           
             
-            
+            underShockCount = 0;
+            bIsUnderShock = true;
+            color.setSaturation(500);
         }       
         
         
@@ -151,17 +160,50 @@ void particle::checkCollision (ofVec2f pnt) {
 
 void particle::update() {
     
-    //color.r = pos.y * 255 / mom->polyBound.getBoundingBox().height;
-   // color.r = pos.y * mom->mainColor.r / mom->polyBound.getBoundingBox().height;;
-   // color.g = pos.y * mom->mainColor.g / mom->polyBound.getBoundingBox().height;;;
-    //color.b = pos.y * mom->mainColor.b / mom->polyBound.getBoundingBox().height;;;
-   
+    float yPosPct = .5 + (pos.y / 52 / 2);
+    
+    color.r =  mom->mainColor.r * yPosPct;
+    color.g = mom->mainColor.g * yPosPct;
+    color.b =  mom->mainColor.b * yPosPct;
+
+    
+    if(bIsUnderShock) {
+        
+        underShockCount++;
+        if( underShockCount % 4 < 2 ) {
+            
+            float divr = 255 - color.r;
+            float divg = 255 - color.g;
+            float divb = 255 - color.b;
+            
+            
+            
+            float pct =  (float)underShockCount / (float) underShockTime;
+            
+            color.r = 255 - divr * pct;
+            color.g = 255 - divg * pct;
+            color.b = 255 - divb * pct;
+            
+            color.set(255,255,255);
+            
+            //color.setSaturation( 1000 - ( 750.0 *pct));
+        } else {
+            color.set(0,0,0);
+        }
+        
+        if(underShockCount > underShockTime ) {
+            color.set(0,0,0);
+            bIsUnderShock = false;
+        }
+        
+        
+    }
+    
+ 
     
     if(isFixed) return;
     
-    color.r = mom->mainColor.r;
-    color.g = mom->mainColor.g ;
-    color.b = mom->mainColor.b ;
+    
         
         vel = vel + frc;
         pos = pos + vel;
@@ -174,9 +216,16 @@ void particle::update() {
 void particle::draw() {
     
     ofPushMatrix();
+    
+    if(!bTestPoly) {
     ofSetColor(color.r, color.g, color.b);
+    } else {
+         ofSetColor(0,255,0);
+    
+    }
     ofTranslate(pos.x, pos.y);
     ofRect(0, 0, 1, 1);
+    
     ofPopMatrix();
     
 }

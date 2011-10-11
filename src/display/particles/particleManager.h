@@ -41,6 +41,8 @@ public:
     void    clearFixed(bool bClearFixed);
     void    clear();
     
+    int    findPosYInLine(ofVec2f pntA, ofVec2f pntB, int x);
+    
     vector<particle*>   particles;
     ofPolyline          polyBound;
     vector<ofxVec2f>    boundVertices;
@@ -50,7 +52,8 @@ public:
     bool bClearFixed;
     
     ofColor mainColor;
-    
+    ofPolyline poly;
+
     
 };
 

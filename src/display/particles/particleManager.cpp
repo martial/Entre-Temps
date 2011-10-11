@@ -40,7 +40,7 @@ void particleManager::update() {
     }
     
     if(isFull()) {
-        ofLog(OF_LOG_NOTICE, "test size ? %d", particles.size());
+       // ofLog(OF_LOG_NOTICE, "test size ? %d", particles.size());
     }
     
     
@@ -52,12 +52,16 @@ void particleManager::update() {
 }
 void particleManager::draw() {
     
-    ofSetColor(0,255,0);
+    
+    
+    //ofSetColor(0,255,0);
     //polyBound.draw();
     
     
-    ofSetColor(0, 255, 255);
+    ofSetColor(255, 255, 255);
     
+    
+    /*
     for ( int i=0; i<boundVertices.size()-1; i++ ) {
         
         // calculate length of every segment and interpolate coords.
@@ -71,8 +75,9 @@ void particleManager::draw() {
         }
         
     }
-
+     */
     
+    //return;
     
     int numOfParticles = particles.size();
     int numOfVertices = numOfParticles * 2;
@@ -81,6 +86,7 @@ void particleManager::draw() {
     
     int vCnt = 0;
     int cCnt = 0;
+    
     for ( int i=0; i<numOfParticles; i++ ) {
         
         vertices[vCnt++] = particles[i]->pos.x;
@@ -103,6 +109,7 @@ void particleManager::draw() {
     glDisableClientState(GL_COLOR_ARRAY);
     
     
+  
     
 }
 
@@ -112,6 +119,9 @@ void particleManager::addParticle(int x, int y) {
     ptcl->setup(this,x,y);
     ptcl->id = particles.size();
     particles.push_back(ptcl);
+    ptcl->update();
+    ptcl->checkCollision();
+    
     
 }
 
@@ -133,9 +143,86 @@ void particleManager::removeLastParticle() {
     
     if(particles.size() < 1 ) return;
        
-        delete particles[particles.size()-1]; 
-        particles.pop_back();
+   
        
+    
+    // first make a triangle 
+    
+    float highestMiddlePos = 51 - getNextHighestYPos(9)-2;  
+       // make a the same poly 
+    
+   
+    
+    vector<int> pts;
+    
+    
+    pts.push_back(1);
+    pts.push_back(0-highestMiddlePos);
+    
+    pts.push_back(1);
+    pts.push_back(42-highestMiddlePos);
+    
+    
+    pts.push_back(10);
+    pts.push_back(51-highestMiddlePos);
+    
+    pts.push_back(19);
+    pts.push_back(42-highestMiddlePos);
+    
+    pts.push_back(19);
+    pts.push_back(0-highestMiddlePos);
+    
+    poly.clear();
+    
+    int size = pts.size() *.5;
+    
+    
+    float  xVertPos[size];
+    float  yVertPos[size];
+    int count = 0;
+    for (int j=0; j<pts.size(); j+=2) {
+        float x = pts[j];
+        float y = pts[j+1];
+        poly.addVertex(x, y);
+        
+        xVertPos[count] = x;
+        yVertPos[count] = y;
+        
+        count ++;
+               
+    }
+
+       
+    vector<ofPoint>  vertices = poly.getVertices();
+    
+    vector<particle*> particlesIn;
+            
+     for ( int i=0; i<particles.size(); i++ ) {
+        if( !particles[i]->isFixed ) continue;
+        if ( pnpoly(size, xVertPos, yVertPos, particles[i]->pos.x, particles[i]->pos.y) == 1 ) {
+            particlesIn.push_back(particles[i]);
+        }
+           
+    }
+    
+    float hyPos = 52;
+    ofPoint posToKill;
+    for ( vector<particle*>::iterator it = particlesIn.begin(); it != particlesIn.end(); ++it ) {
+        
+        if ( (*it)->pos.y < hyPos ) {
+            hyPos = (*it)->pos.y;
+            posToKill.set( (*it)->pos.x, (*it)->pos.y);
+        }
+        
+    }
+   
+     for ( vector<particle*>::iterator it = particles.begin(); it != particles.end(); ++it ) {
+         if ( (*it)->pos.x == posToKill.x && (*it)->pos.y == posToKill.y ) {
+             delete * it;  
+             particles.erase(it);
+             return;
+         }
+     }
     
     
 }
@@ -163,12 +250,45 @@ void particleManager::checkForCollisions(particle * p) {
 
 float particleManager::getNextHighestYPos(float x, particle * p) {
     
+    
+    
+    
+    float height = 42.0;
+    ofVec2f pntA, pntB;
+    if ( x <= 9 ) {
+        
+        pntA.set(0,0);
+        pntB.set(9, 9);
+        
+    } else {
+        
+        pntA.set(9, 9);
+        pntB.set(18, 0);
+    }
+    
+    height += findPosYInLine(pntA, pntB, (int)x);
+    
+   // ofLog(OF_LOG_NOTICE, "Height for %d : %d", (int)x, height);
+    
+    
+    for ( int i=0; i<particles.size(); i++ ) {
+        
+        // avoid same particle.
+       // if( p != 0 && particles[i]->id == p->id ) continue;
+        //if(!particles[i]->isFixed) continue;
+        if (particles[i]->pos.x == x ) height--;
+    }
+    
+    return height+1;
+    
+
+    
     float highest = 9999.0;
     int index = 0;
     for ( int i=0; i<particles.size(); i++ ) {
         
         // avoid same particle.
-        if( p != 0 && particles[i]->id == p->id ) continue;
+       // if( p != 0 && particles[i]->id == p->id ) continue;
         
         // avoid non fixed particles.
         if(!particles[i]->isFixed) continue;
@@ -183,10 +303,52 @@ float particleManager::getNextHighestYPos(float x, particle * p) {
         }
         
     }
+    return highest+1;
+     
+    /*
+    int height = 41;
+    ofVec2f pntA, pntB;
+    if ( x <= 9 ) {
+        
+        pntA.set(0,0);
+        pntB.set(9, 9);
+        
+    } else {
+        
+        pntA.set(9, 9);
+        pntB.set(18, 0);
+    }
     
+    height += findPosYInLine(pntA, pntB, x);
     
+    int index = 0;
+    for ( int i=0; i<particles.size(); i++ ) {
+        
+        // avoid same particle.
+        if( p != 0 && particles[i]->id == p->id ) continue;
+        
+        if (particles[i]->pos.x != x ) continue;
+        
+       
+        
+        height--;
+        
+        
+        
+    }
     
-    return highest;
+    return height;
+     */
+     
+}
+
+int particleManager::findPosYInLine(ofVec2f pntA, ofVec2f pntB, int x) {
+        
+    float a = ((pntB.y-pntA.y)/(pntB.x-pntA.x));
+    float b = (a != 0 ) ? pntA.y-(pntA.x*a) : pntA.y;
+    
+    return floor(a * x + b);
+    
 }
 
 bool particleManager::isFull() {
@@ -195,7 +357,7 @@ bool particleManager::isFull() {
     int cnt = 0;
     for ( int i=1; i<polyBound.getBoundingBox().width; i++ ) {
         
-        if ( getNextHighestYPos(i) <= 0 ) {
+        if ( getNextHighestYPos(i) <= 2 ) {
             cnt++;
         }
         
@@ -207,7 +369,9 @@ bool particleManager::isFull() {
 
 bool particleManager::isColumnFull(int x) {
     
-    return  (getNextHighestYPos(x) <= 0 ); 
+  
+    int yPos = (x % 2 ==1) ? 2 : 1;
+    return  (getNextHighestYPos(x) <= yPos ); 
     
 }
 
@@ -287,8 +451,10 @@ int particleManager::getNumOfPixelsInBounds() {
     
     ofRectangle box = polyBound.getBoundingBox();
     
-    float  vertx[polyBound.getVertices().size()];
-    float  verty[polyBound.getVertices().size()];
+    int numOfVertices = polyBound.getVertices().size();
+    
+    float  vertx[numOfVertices];
+    float  verty[numOfVertices];
     
     for ( int i=0; i<boundVertices.size(); i++ ) {
         

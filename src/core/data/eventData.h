@@ -19,8 +19,9 @@ public:
     ~eventData();
     
     string updateStatus(long int currentUnixTime);
+   
     
-    long int  getEndingTime () {
+    long getEndingTime () {
         return posixTime + duration;        
     }
     
@@ -33,6 +34,11 @@ public:
     
     bool        isRunning;
     bool        isFinished;
+    
+    string         siloNumber;
+    
+    
+    
     string      status;
     
     

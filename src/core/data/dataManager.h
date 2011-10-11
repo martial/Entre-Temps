@@ -24,6 +24,10 @@ public:
     void loadFromBuffer(string data);    
     void onXmlReceived(string & xml);
     
+    void createColors();
+    vector<ofColor*> * getColorForSilo(int typeID);
+    ofColor * getColorForSilo(int typeID, int siloIndex);
+    
     eventData * getNextEventData();
     eventData * getFinishedEventData ();
     
@@ -38,6 +42,8 @@ private:
     
     vector<eventData*>  events;
     
+    
+    vector<vector<ofColor*> > colors;
 };
 
 

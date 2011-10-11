@@ -17,6 +17,9 @@ void silo::setup() {
     sens = 1;
     bounceCount = 0;
     
+    
+    totalPixels = pManager.getNumOfPixelsInBounds();
+    
     // lazy
     //totalPixels = getNumOfPixels();
     
@@ -25,43 +28,37 @@ void silo::setup() {
 void silo::update(){
     pManager.update();
     
+    
+   
+    
+    
 }
 void silo::draw() {
     pManager.draw();
 }
 
-/*
-*   Don't use twice! !!
-*/
 
-int silo::getNumOfPixels() {
-    
-    while (!pManager.isFull() ) {
-        addRandomPoint();
-        update();
-    }
-    
-    int total = pManager.particles.size();
-    pManager.clear();
-    return total;
-    
-}
 
 void silo::addRandomPoint() {
     
-    if(pManager.isFull() ) return;
+    if(getPctLoaded() == 1.0) {
+        return;
+    }
     
     int randomPoint = getRandomPoint();    
     
-    while ( pManager.isColumnFull(randomPoint) ) {
+    bool isFull =  pManager.isColumnFull(randomPoint);
+    while ( isFull ) {
         randomPoint = getRandomPoint();
+        isFull =  pManager.isColumnFull(randomPoint);
+        
+
     }
     
     
-   
-    pManager.addParticle(currentPoint, 0);
+  
     
-    
+    pManager.addParticle(randomPoint, 0);
     
 }
 
@@ -102,12 +99,13 @@ int silo::getRandomPoint() {
 float silo::getPctLoaded () {
     
     if(pManager.particles.size() == 0 ) return 0.0;
-    return  pManager.particles.size() / 812.0;
+    if(pManager.particles.size() >= 786 ) return 1.0;
+    return  pManager.particles.size() / 786.0;
 }
 
 float silo::getNextPct() {
-    
-    return  (pManager.particles.size() +1 ) / 812.0;
+    //if(pManager.particles.size() == 786 ) return 1.0;
+    return  (pManager.particles.size() +1 ) / 786.0;
 }
 
 
