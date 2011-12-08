@@ -1,0 +1,24 @@
+In file included from /Users/Martial/Git/of_preRelease_v007_osx/apps/martial/ENTRE_TEMPS/src/core/data/dataManager.h:13,
+                 from /Users/Martial/Git/of_preRelease_v007_osx/apps/martial/ENTRE_TEMPS/src/app/entreTempsApp.h:14,
+                 from /Users/Martial/Git/of_preRelease_v007_osx/apps/martial/ENTRE_TEMPS/src/app/entreTempsApp.cpp:9:
+/Users/Martial/Git/of_preRelease_v007_osx/apps/martial/ENTRE_TEMPS/src/core/udp/flashUdpManager.h:13:35: error: ofxFlashCommunication.h: No such file or directory
+In file included from /Users/Martial/Git/of_preRelease_v007_osx/apps/martial/ENTRE_TEMPS/src/app/entreTempsApp.cpp:9:
+/Users/Martial/Git/of_preRelease_v007_osx/apps/martial/ENTRE_TEMPS/src/app/entreTempsApp.h:16:24: error: tcpManager.h: No such file or directory
+In file included from /Users/Martial/Git/of_preRelease_v007_osx/apps/martial/ENTRE_TEMPS/src/display/particles/particle.h:13,
+                 from /Users/Martial/Git/of_preRelease_v007_osx/apps/martial/ENTRE_TEMPS/src/display/particles/particleManager.h:13,
+                 from /Users/Martial/Git/of_preRelease_v007_osx/apps/martial/ENTRE_TEMPS/src/display/silo/silo.h:13,
+                 from /Users/Martial/Git/of_preRelease_v007_osx/apps/martial/ENTRE_TEMPS/src/display/silo/silosManager.h:13,
+                 from /Users/Martial/Git/of_preRelease_v007_osx/apps/martial/ENTRE_TEMPS/src/app/entreTempsApp.h:18,
+                 from /Users/Martial/Git/of_preRelease_v007_osx/apps/martial/ENTRE_TEMPS/src/app/entreTempsApp.cpp:9:
+/Users/Martial/Git/of_preRelease_v007_osx/apps/martial/ENTRE_TEMPS/../../../addons/ofxVectorMath/src/ofxVec2f.h:5:2: warning: #warning ofxVec2f has been deprecated.
+/Users/Martial/Git/of_preRelease_v007_osx/apps/martial/ENTRE_TEMPS/../../../addons/ofxVectorMath/src/ofxVec2f.h:6:2: warning: #warning Remove all references to ofxVec2f.h and use ofVec2f instead.
+In file included from /Users/Martial/Git/of_preRelease_v007_osx/apps/martial/ENTRE_TEMPS/src/core/data/dataManager.h:13,
+                 from /Users/Martial/Git/of_preRelease_v007_osx/apps/martial/ENTRE_TEMPS/src/app/entreTempsApp.h:14,
+                 from /Users/Martial/Git/of_preRelease_v007_osx/apps/martial/ENTRE_TEMPS/src/app/entreTempsApp.cpp:9:
+/Users/Martial/Git/of_preRelease_v007_osx/apps/martial/ENTRE_TEMPS/src/core/udp/flashUdpManager.h:22: error: 'ofxFlashCommunication' does not name a type
+In file included from /Users/Martial/Git/of_preRelease_v007_osx/apps/martial/ENTRE_TEMPS/src/app/entreTempsApp.cpp:9:
+/Users/Martial/Git/of_preRelease_v007_osx/apps/martial/ENTRE_TEMPS/src/app/entreTempsApp.h:41: error: 'tcpManager' does not name a type
+/Users/Martial/Git/of_preRelease_v007_osx/apps/martial/ENTRE_TEMPS/src/app/entreTempsApp.cpp: In member function 'void entreTempsApp::setup()':
+/Users/Martial/Git/of_preRelease_v007_osx/apps/martial/ENTRE_TEMPS/src/app/entreTempsApp.cpp:13: error: 'tcp' was not declared in this scope
+/Users/Martial/Git/of_preRelease_v007_osx/apps/martial/ENTRE_TEMPS/src/app/entreTempsApp.cpp: In member function 'void entreTempsApp::update()':
+/Users/Martial/Git/of_preRelease_v007_osx/apps/martial/ENTRE_TEMPS/src/app/entreTempsApp.cpp:31: error: 'tcp' was not declared in this scope

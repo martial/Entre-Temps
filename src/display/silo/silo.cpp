@@ -98,6 +98,8 @@ int silo::getRandomPoint() {
 
 float silo::getPctLoaded () {
     
+   // if(!pManager.particles) return 0.0;
+    
     if(pManager.particles.size() == 0 ) return 0.0;
     if(pManager.particles.size() >= 786 ) return 1.0;
     return  pManager.particles.size() / 786.0;

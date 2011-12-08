@@ -19,11 +19,14 @@ public:
     void setup();
     void update();
     void draw();
+    void drawFbo();
     
     void onMainTimer();
     void addRandomParticle(string siloNumber);
     void deleteRandomParticle(string siloNumber);
+    
     void setMainColor(vector<ofColor*> * colors);
+    void updateColors();
     
     
     float getPctLoaded();
@@ -41,6 +44,11 @@ public:
     
     int             totalPixels;
     int             currentSilo;
+    
+    vector<ofColor*> currentColors;
+    
+    float           blurColorRate;
+    
     
 };
 

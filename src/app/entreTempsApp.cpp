@@ -10,8 +10,8 @@
 
 void entreTempsApp::setup() {
     
-    flash.setup();
-    data.setup(&flash);
+    tcp.setup();
+    data.setup(&tcp);
     time.setup();
     
     timer.setup(20, true);
@@ -28,7 +28,7 @@ void entreTempsApp::setup() {
 }
 void entreTempsApp::update() {
     if(!time.bOnline) return;
-    flash.update();
+    tcp.update();
     silos.update();
     
 }
@@ -39,8 +39,11 @@ void entreTempsApp::draw() {
     ofTranslate(294, 214 - 1);
     silos.draw();
     
-   // drawDebug();
+    drawDebug();
     ofPopMatrix();
+    
+    
+    silos.drawFbo();
     
 }
 
@@ -57,6 +60,8 @@ void entreTempsApp::drawDebug() {
     
     ofDrawBitmapString("Pixel every " + ofToString( numOfMnByPixel) +" mn " + ofToString(numOfSecondsByPixel) +" sc", 0, 100);
     
+    string clientConnected = (tcp.bHasClientConnected) ? "YES" : "NO";
+    ofDrawBitmapString("Has client connected : " + clientConnected, 0, 115);
     
     
 }
@@ -73,17 +78,15 @@ void entreTempsApp::onMainTimer(int & e) {
     if (nextEventData->isRunning) {
         pct = 1.0;
     } else {
-		pct = time.getPctElapsedBetween(data.getFinishedEventData()->getEndingTime(), data.getNextEventData()->posixTime);
+		pct = time.getPctElapsedBetween(data.getFinishedEventData()->getEndingTime(), nextEventData->posixTime);
     }
     
+    pct = ofClamp(pct, 0.0, 1.0);
     
-    
-    
+     
     // stable
-    
-    
-    
-     silos.setMainColor(data.getColorForSilo(nextEventData->typeID));
+   
+    silos.setMainColor(data.getColorForSilo(nextEventData->typeID));
    
       
     
@@ -102,6 +105,10 @@ void entreTempsApp::onMainTimer(int & e) {
         
         if (  silos.getNextPct() > pct) {
             
+            // things are going empty.
+            // we should let the program know that somehting is going on here
+            
+                       
             silos.setMainColor(data.getColorForSilo(data.getFinishedEventData()->typeID));
             silos.deleteRandomParticle(nextEventData->siloNumber);
             return;

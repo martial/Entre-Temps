@@ -23,7 +23,6 @@ void timeManager::parseXml () {
     
     int numOfNodes = hoursXml.getNumTags("node");
     
-    ofLog(OF_LOG_NOTICE, "num of hours %d", numOfNodes);
         
     for ( int i=0; i<numOfNodes; i++ ) {
         
@@ -97,8 +96,8 @@ bool timeManager::isOnline() {
                 
         ofLog(OF_LOG_NOTICE, "currentHour %d - data startingHour %d - endingHour %d", currentHour, tmData->startingHour, tmData->endingHour);
                     
-                // we are in the same hour period.. check minuts!
-                // find if we have to be + or - 
+        // we are in the same hour period.. check minuts!
+        // find if we have to be + or - 
                     
         if (currentHour == tmData->startingHour ) {
             return (currentMinut >= tmData->startingMinut);
@@ -206,6 +205,7 @@ float timeManager::getPctElapsedBetween(long startingTime, long endingTime) {
     
     particleStepInSec = (float) remainingSeconds /  (786 * 3.0 ) ;
     
+
         
     //ofLog(OF_LOG_NOTICE, "particleStepInSec %f", particleStepInSec );
     
@@ -229,7 +229,7 @@ float timeManager::getPctElapsedBetween(long startingTime, long endingTime) {
         char month [80];
         char day [80];
         
-        timeinfo =  gmtime(&rawtime);
+        timeinfo = gmtime(&rawtime);
         
         strftime (month,80,"%m",timeinfo);
         strftime (day,80,"%d",timeinfo);
@@ -244,6 +244,7 @@ float timeManager::getPctElapsedBetween(long startingTime, long endingTime) {
     
     long elapsedSeconds = remainingSeconds - getSecondsElapsedBetween(unixTimeWithoutGaps, endingTime);
     
+   
     return (float)((float)elapsedSeconds / (float)remainingSeconds);
 }
 
@@ -254,8 +255,6 @@ int timeManager::getNumOfNonWorkingsSecondsFor(int month, int day) {
         timeData * tmData = workingTimeData[i];
         
         if(month == tmData->month) {
-            
-            
             
             if(day >= tmData->startingDay && day <= tmData->endingDay ) {
                 // GO GO GO

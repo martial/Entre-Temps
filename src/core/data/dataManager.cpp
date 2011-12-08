@@ -8,9 +8,9 @@
 
 #include "dataManager.h"
 
-void dataManager::setup(flashUdpManager * flash){
-    this->flash = flash;
-    ofAddListener(flash->xmlEvt, this, &dataManager::onXmlReceived);
+void dataManager::setup(tcpManager * tcp){
+    this->tcp = tcp;
+    ofAddListener(tcp->xmlEvt, this, &dataManager::onXmlReceived);
     
     createColors();
     loadLocalXml();
@@ -150,10 +150,13 @@ eventData * dataManager::getNextEventData () {
     
     // check for most recent - should not be essential but who knows?
     
+    //ofLog(OF_LOG_NOTICE, "events.size() %d", events.size());
+    if(events.size() < 2 ) return NULL;
+    
     
     
     long  lowestPosixTime = LONG_MAX;
-    int index = 0;
+    int index = -1;
     for (int i=0; i<events.size(); i++) {
         if(!events[i]->isFinished) {
             if ( lowestPosixTime > events[i]->posixTime ) {
@@ -162,6 +165,11 @@ eventData * dataManager::getNextEventData () {
             }
         }
     }
+    
+    // this means that we have actually only finished events in the xml..
+    if(index == -1 ) return NULL;
+    
+    // we're ok - go !
     return events[index];
 }
 

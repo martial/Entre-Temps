@@ -10,7 +10,7 @@
 #define DATAMNGR
 
 #include "ofMain.h"
-#include "flashUdpManager.h"
+#include "tcpManager.h"
 #include "ofxXmlSettings.h"
 #include "eventData.h"
 
@@ -18,7 +18,7 @@ class dataManager {
     
 public:
     
-    void setup(flashUdpManager * flash);
+    void setup(tcpManager * tcp);
     void update(long currentUnixTime);
     void loadLocalXml ();
     void loadFromBuffer(string data);    
@@ -37,7 +37,7 @@ private:
     void parseXml();
     void backupXml();
     
-    flashUdpManager *   flash;
+    tcpManager *   tcp;
     ofxXmlSettings      xml;
     
     vector<eventData*>  events;

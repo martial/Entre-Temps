@@ -13,6 +13,7 @@
 #include "ofxTimer.h"
 #include "dataManager.h"
 #include "flashUdpManager.h"
+#include "tcpManager.h"
 #include "timeManager.h"
 #include "silosManager.h"
 
@@ -37,12 +38,12 @@ public:
     
     dataManager         data;
     flashUdpManager     flash;
+	tcpManager			tcp;
     timeManager         time;
     
     ofxTimer            timer;
     
     ofFbo               fbo;
-    
     
     
 };

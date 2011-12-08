@@ -43,6 +43,9 @@ void particle::setup (particleManager * mom, float x, float y) {
     highestPos = mom->getNextHighestYPos(pos.x, this)-1;
     
     bTestPoly = false;
+    
+    numOfTrails = 10.0;
+    currentNumOfTrails = 10.0;
    
    }
 
@@ -186,9 +189,11 @@ void particle::update() {
             
             color.set(255,255,255);
             
-            //color.setSaturation( 1000 - ( 750.0 *pct));
+            
         } else {
+            
             color.set(0,0,0);
+            
         }
         
         if(underShockCount > underShockTime ) {
@@ -201,33 +206,17 @@ void particle::update() {
     
  
     
-    if(isFixed) return;
-    
-    
+    if(isFixed) {
+        if(currentNumOfTrails > 0) currentNumOfTrails -= .5; 
+        return;
         
-        vel = vel + frc;
-        pos = pos + vel;
+    }
+            
+    vel = vel + frc;
+    pos = pos + vel;
     
-       // pos.x = (int)pos.x;
-       // pos.y = (int)pos.y;
-    
+           
 }
 
-void particle::draw() {
-    
-    ofPushMatrix();
-    
-    if(!bTestPoly) {
-    ofSetColor(color.r, color.g, color.b);
-    } else {
-         ofSetColor(0,255,0);
-    
-    }
-    ofTranslate(pos.x, pos.y);
-    ofRect(0, 0, 1, 1);
-    
-    ofPopMatrix();
-    
-}
 
 

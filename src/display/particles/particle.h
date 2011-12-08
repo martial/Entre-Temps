@@ -22,8 +22,7 @@ public:
     ~particle();
     void setup(particleManager * mom, float x, float y);
     void update();
-    void draw();
-    
+       
     void checkCollision();
     void checkCollision(float x, float y);
     void checkCollision (ofVec2f pnt);
@@ -53,6 +52,9 @@ public:
     particleManager  * mom;
     
     float highestPos;
+    
+    int numOfTrails;
+    float currentNumOfTrails;
     
 };
 

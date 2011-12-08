@@ -10,7 +10,7 @@
 
 void flashUdpManager::setup () {
     
-	flash.setup("localhost",1234);
+	flash.setup("192.168.1.9", 1234);
 	flash.addPolicy("*","*"); 
 	flash.start();
     

@@ -11,11 +11,11 @@
 void particleManager::setup() {
     
     addBounds();
-    getNumOfPixelsInBounds();
     
     bClearFixed = false;
     mainColor = 0xffffff;
     
+    //particles.reserve(getNumOfPixelsInBounds());
     //ofLog(OF_LOG_NOTICE, "num of pixels in bouns size ? %d", getNumOfPixelsInBounds());
     
 }
@@ -39,14 +39,7 @@ void particleManager::update() {
         
     }
     
-    if(isFull()) {
-       // ofLog(OF_LOG_NOTICE, "test size ? %d", particles.size());
-    }
-    
-    
-    /*
-     
-     */
+ 
      
     
 }
@@ -57,7 +50,7 @@ void particleManager::draw() {
     //ofSetColor(0,255,0);
     //polyBound.draw();
     
-    
+    ofEnableAlphaBlending();
     ofSetColor(255, 255, 255);
     
     
@@ -80,6 +73,15 @@ void particleManager::draw() {
     //return;
     
     int numOfParticles = particles.size();
+    int defaultParticles = particles.size();
+    // get current num of particle 
+    
+    
+    
+    for ( int i=0; i<defaultParticles; i++ ) {
+        numOfParticles += floor(particles[i]->currentNumOfTrails);
+    }
+    
     int numOfVertices = numOfParticles * 2;
     GLfloat vertices[numOfVertices];
     GLfloat colors[numOfParticles*4];
@@ -87,7 +89,24 @@ void particleManager::draw() {
     int vCnt = 0;
     int cCnt = 0;
     
-    for ( int i=0; i<numOfParticles; i++ ) {
+    for ( int i=0; i<defaultParticles; i++ ) {
+        
+        particle * p = particles[i];
+        
+        for ( int j=0; j< floor(p->currentNumOfTrails); j++ ) {
+            
+            
+            vertices[vCnt++] = particles[i]->pos.x;
+            vertices[vCnt++] = particles[i]->pos.y - j;
+            
+            float alphaPct = 1.0 - (j / (float)floor(particles[i]->currentNumOfTrails)) ;
+            
+            colors[cCnt++] = particles[i]->color.r / 255.0;
+            colors[cCnt++] = particles[i]->color.g / 255.0; 
+            colors[cCnt++] = particles[i]->color.b / 255.0; 
+            colors[cCnt++] = alphaPct; 
+            
+        }
         
         vertices[vCnt++] = particles[i]->pos.x;
         vertices[vCnt++] = particles[i]->pos.y;
@@ -108,7 +127,7 @@ void particleManager::draw() {
     glDisableClientState(GL_VERTEX_ARRAY);  
     glDisableClientState(GL_COLOR_ARRAY);
     
-    
+    ofDisableAlphaBlending();
   
     
 }
@@ -475,6 +494,7 @@ int particleManager::getNumOfPixelsInBounds() {
         
         
     }
-    ofLog(OF_LOG_NOTICE, "Result ? %d", cnt);
+    
+   
 
 }
