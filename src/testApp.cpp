@@ -11,12 +11,10 @@ void testApp::setup(){
     ofSetFrameRate(60);
     ofSetLogLevel(OF_LOG_NOTICE);
     
-    
-    ofLog(OF_LOG_NOTICE, "setup...");
 	app = new entreTempsApp();
     app->setup();
     
-    
+    ofHideCursor();
    
     
 }
@@ -29,7 +27,7 @@ void testApp::update(){
 //--------------------------------------------------------------
 void testApp::draw(){
 	
-	
+	// do it!
 	ofBackgroundHex(0x000000, 1);
     app->draw();
 
@@ -40,10 +38,30 @@ void testApp::keyPressed(int key){
     
     
     if ( key == 'f' ) {
-            
-        ofToggleFullscreen();
-    
+        ofToggleFullscreen();    
     }
+    
+    if ( key == 'd' ) {
+        app->bDrawDebug = !app->bDrawDebug;  
+    }
+    
+    if ( key == 'q' ) {
+        app->silos.setEffect(0);
+    }
+    
+    
+    if ( key == 'w' ) {
+        app->silos.setEffect(1);
+    }
+    
+    
+    
+    if ( key == 'e' ) {
+        app->silos.setEffect(2);
+    }
+    
+    
+    
     
 }
 

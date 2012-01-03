@@ -23,14 +23,10 @@ public:
     void update();
     void draw();
     
-    void    checkForCollisions (particle * p);
-    
-    
-    
+    void    checkForCollisions (particle * p);    
     void    addParticle(int x, int y);
     void    removeParticle(particle * p);
     void    removeLastParticle();
-    
     void    addBounds();
     
     float   getNextHighestYPos(float x,particle * p = NULL);
@@ -41,7 +37,9 @@ public:
     void    clearFixed(bool bClearFixed);
     void    clear();
     
-    int    findPosYInLine(ofVec2f pntA, ofVec2f pntB, int x);
+    int     findPosYInLine(ofVec2f pntA, ofVec2f pntB, int x);
+    
+    void    setGridSpacing(float spacing);
     
     vector<particle*>   particles;
     ofPolyline          polyBound;
@@ -53,6 +51,14 @@ public:
     
     ofColor mainColor;
     ofPolyline poly;
+    
+    ofShader posShader;
+    
+    
+    private :
+    
+    
+    float spacing;
 
     
 };

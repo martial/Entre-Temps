@@ -15,10 +15,21 @@ void particleManager::setup() {
     bClearFixed = false;
     mainColor = 0xffffff;
     
+    posShader.load("shaders/pos.vert", "shaders/pos.frag");
+    
+    spacing = 1.0;
+    
     //particles.reserve(getNumOfPixelsInBounds());
     //ofLog(OF_LOG_NOTICE, "num of pixels in bouns size ? %d", getNumOfPixelsInBounds());
     
 }
+
+void particleManager::setGridSpacing(float spacing) {
+    
+    this->spacing = spacing;
+    
+}
+
 void particleManager::update() {
     
    
@@ -96,17 +107,19 @@ void particleManager::draw() {
         for ( int j=0; j< floor(p->currentNumOfTrails); j++ ) {
             
             
+            
             vertices[vCnt++] = particles[i]->pos.x;
             vertices[vCnt++] = particles[i]->pos.y - j;
             
             float alphaPct = 1.0 - (j / (float)floor(particles[i]->currentNumOfTrails)) ;
             
-            colors[cCnt++] = particles[i]->color.r / 255.0;
-            colors[cCnt++] = particles[i]->color.g / 255.0; 
-            colors[cCnt++] = particles[i]->color.b / 255.0; 
+            colors[cCnt++] = mainColor.r / 255.0;
+            colors[cCnt++] = mainColor.g / 255.0; 
+            colors[cCnt++] = mainColor.b / 255.0; 
             colors[cCnt++] = alphaPct; 
             
         }
+         
         
         vertices[vCnt++] = particles[i]->pos.x;
         vertices[vCnt++] = particles[i]->pos.y;
@@ -117,7 +130,15 @@ void particleManager::draw() {
         colors[cCnt++] = particles[i]->color.a / 255.0; 
         
     }
-        
+    
+    /*
+    posShader.begin();
+    posShader.setUniform1f("mult", spacing);
+    posShader.setUniform1f("timeValX", ofGetElapsedTimef() * 0.1 );
+    posShader.setUniform1f("timeValY", ofGetElapsedTimef() * 0.18 );
+    */
+     
+     
     ofSetColor(255, 255, 255);
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
@@ -128,7 +149,8 @@ void particleManager::draw() {
     glDisableClientState(GL_COLOR_ARRAY);
     
     ofDisableAlphaBlending();
-  
+    
+   // posShader.end();
     
 }
 
@@ -371,24 +393,17 @@ int particleManager::findPosYInLine(ofVec2f pntA, ofVec2f pntB, int x) {
 }
 
 bool particleManager::isFull() {
-    
   
     int cnt = 0;
     for ( int i=1; i<polyBound.getBoundingBox().width; i++ ) {
-        
-        if ( getNextHighestYPos(i) <= 2 ) {
-            cnt++;
-        }
-        
+        if ( getNextHighestYPos(i) <= 2 )  cnt++;
     }
-    
     return ( cnt >= polyBound.getBoundingBox().width-1 );
     
 }
 
 bool particleManager::isColumnFull(int x) {
     
-  
     int yPos = (x % 2 ==1) ? 2 : 1;
     return  (getNextHighestYPos(x) <= yPos ); 
     
@@ -396,10 +411,8 @@ bool particleManager::isColumnFull(int x) {
 
 void particleManager::clear () {
     
-    
     for ( vector<particle*>::iterator it = particles.begin(); it != particles.end(); ++it ) delete * it;
     particles.clear();
-    
 }
 
 void particleManager::clearFixed (bool bClearFixed) {

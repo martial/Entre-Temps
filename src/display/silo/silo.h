@@ -22,7 +22,7 @@ public:
     int  getRandomPoint();
     void addRandomPoint();
     
-    
+    void  setGridSpacing(float spacing);
     
     float getPctLoaded();
     float getNextPct();

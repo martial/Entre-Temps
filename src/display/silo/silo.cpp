@@ -14,24 +14,22 @@ void silo::setup() {
     
     xBounds.set(pManager.polyBound.getBoundingBox().x, pManager.polyBound.getBoundingBox().width - pManager.polyBound.getBoundingBox().x-1);
     currentPoint = xBounds.x+1;
+    
     sens = 1;
     bounceCount = 0;
     
     
     totalPixels = pManager.getNumOfPixelsInBounds();
-    
-    // lazy
-    //totalPixels = getNumOfPixels();
-    
+        
     
 }
+
+void silo::setGridSpacing(float spacing) {
+    pManager.setGridSpacing(spacing);
+}
+
 void silo::update(){
-    pManager.update();
-    
-    
-   
-    
-    
+    pManager.update();        
 }
 void silo::draw() {
     pManager.draw();
@@ -41,9 +39,8 @@ void silo::draw() {
 
 void silo::addRandomPoint() {
     
-    if(getPctLoaded() == 1.0) {
-        return;
-    }
+    if(getPctLoaded() == 1.0)  return;
+     
     
     int randomPoint = getRandomPoint();    
     
@@ -51,12 +48,7 @@ void silo::addRandomPoint() {
     while ( isFull ) {
         randomPoint = getRandomPoint();
         isFull =  pManager.isColumnFull(randomPoint);
-        
-
     }
-    
-    
-  
     
     pManager.addParticle(randomPoint, 0);
     
@@ -97,16 +89,15 @@ int silo::getRandomPoint() {
 }
 
 float silo::getPctLoaded () {
-    
-   // if(!pManager.particles) return 0.0;
-    
+        
     if(pManager.particles.size() == 0 ) return 0.0;
     if(pManager.particles.size() >= 786 ) return 1.0;
     return  pManager.particles.size() / 786.0;
 }
 
+
+
 float silo::getNextPct() {
-    //if(pManager.particles.size() == 786 ) return 1.0;
     return  (pManager.particles.size() +1 ) / 786.0;
 }
 

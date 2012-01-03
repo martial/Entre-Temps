@@ -10,7 +10,8 @@
 
 void silosManager::setup(){
     
-   
+    
+    // setup all the silos
     totalPixels = 0;
     for ( int i=0; i<3; i++ ) {
         
@@ -20,31 +21,57 @@ void silosManager::setup(){
         totalPixels += siloObject->totalPixels;
     }
     
-    ofLog(OF_LOG_NOTICE, "setup has been done bro'");
-    
-	ofFbo::Settings s;
-	s.width				= (silos[0]->pManager.polyBound.getBoundingBox().width+2) * 3;
-	s.height			= silos[0]->pManager.polyBound.getBoundingBox().height+2;
-	s.numColorbuffers	= 4;
-	s.numSamples		= 0;
-    s.internalformat    = GL_RGB;
-    s.useDepth          = false;
-    s.useStencil        = false;
-	fbo.allocate(s);
-	
+       
+    // define current to be drawn
     currentSilo = 0;
     
+    // define tweens for colors
     currentColors.reserve(3);
-    blurColorRate = .99;
+    blurColorRate = .5;
+    for ( int i=0; i<3*3 ; i++ ) {
+        tweens.push_back(new ofxTween());
+    }
+    
+    
+    // setup shader for position and effects
+    posShader.load("shaders/pos.vert", "shaders/pos.frag");
+    effectId = 0;
+    spacing = 1.0;
+    setGridSpacing(spacing);
+    
+    
+    /*
+     ofFbo::Settings s;
+     s.width				= (silos[0]->pManager.polyBound.getBoundingBox().width+2) * 3;
+     s.height			= silos[0]->pManager.polyBound.getBoundingBox().height+2;
+     s.numColorbuffers	= 4;
+     s.numSamples		= 0;
+     s.internalformat    = GL_RGB;
+     s.useDepth          = false;
+     s.useStencil        = false;
+     fbo.allocate(s);
+     */
+	
+
+    
+}
+
+void  silosManager::setGridSpacing(float spacing) {
+    this->spacing = spacing;
+    for ( int i=0; i<3; i++ ) {
+        silos[i]->setGridSpacing(spacing);
+    }
+}
+
+void silosManager::setEffect(int id) {
+    
+    effectId = id;
     
 }
 
 void silosManager::update() {
     
-    for ( int i=0; i<3; i++ ) {
-        silos[i]->update();
-    }
-    
+    for ( int i=0; i<3; i++ )  silos[i]->update();
     updateColors();
     
 }
@@ -52,13 +79,15 @@ void silosManager::update() {
 void silosManager::draw() {
     
     ofSetColor(255, 255, 255);
-	fbo.begin();
     
-    ofClear(1, 1, 1, 1); // we clear the fbo. 
+	
+    posShader.begin();
+    posShader.setUniform1i("effect", effectId);
+    posShader.setUniform1f("mult", spacing);
+    posShader.setUniform1f("timeValX", ofGetElapsedTimef() * 0.1 );
+    posShader.setUniform1f("timeValY", -ofGetElapsedTimef() * 0.18 );
     
-	//ofEnableAlphaBlending();
-	
-	
+    
     float xPos = -1;
   
     for ( int i=0; i<3; i++ ) {
@@ -67,36 +96,27 @@ void silosManager::draw() {
         silos[i]->draw();
         ofPopMatrix();
         
-        xPos += silos[i]->pManager.polyBound.getBoundingBox().width-1;
-        
-       // ofLog(OF_LOG_NOTICE, "xPos %f ", xPos);
-        
+        xPos += (silos[i]->pManager.polyBound.getBoundingBox().width-1) * spacing;
+                
     }
     
     this->width = xPos - (silos[0]->pManager.polyBound.getBoundingBox().width);
     this->height = silos[0]->pManager.polyBound.getBoundingBox().height;
 	
-	//ofDisableAlphaBlending();
 	ofSetColor(255, 255, 255);
-	fbo.end();
-    
-    ofEnableAlphaBlending();
-   
-   
-    fbo.draw(0, 0);
-    
-    
        
-    
-    
-    
+    posShader.end();
+
 }
 
-void silosManager::drawFbo () {
+
+
+
+void silosManager::drawFbo (int x, int y) {
     
     
     ofPushMatrix();
-    ofTranslate(ofGetWidth()*.5 - fbo.getWidth()*4/2, ofGetHeight()*.5 - fbo.getHeight()*4/2);
+    ofTranslate(x,y);
     fbo.draw(fbo.getWidth(), fbo.getHeight(),fbo.getWidth()*4, fbo.getHeight()*4 );
     ofPopMatrix();
     ofDisableAlphaBlending();
@@ -114,21 +134,8 @@ void silosManager::onMainTimer() {
 
 void silosManager::addRandomParticle (string siloNumber) {
     
-    /*
-    int index;
-    int i = 0;
-    
-    for (  i=0; i<3; i++ ) {
-       
-       char strIndex = siloNumber.at(i);
-       index = atoi(&strIndex);
-       if ( silos[index]->getPctLoaded() != 1.0 ) break;
+    // find out the good silo 
         
-    }
-       
-    silos[index]->addRandomPoint();
-    */
-    
     int siloIndex;
     int index;
     float rdm;
@@ -139,10 +146,9 @@ void silosManager::addRandomParticle (string siloNumber) {
          istringstream buffer(&strIndex);
          buffer >> siloIndex;
          
-         //ofLog(OF_LOG_NOTICE, "Silo index %d", siloIndex);
-         
          if ( silos[siloIndex]->getPctLoaded() != 1.0 ) break;
      }
+    
     
     // we get the next id we want to prioritize
     // and add a pct variation of .2 ?
@@ -152,23 +158,13 @@ void silosManager::addRandomParticle (string siloNumber) {
     
     if( rdm > .25 ) {
         
-        while(silos[index]->getPctLoaded() == 1.0 ) {
-            index =  floor(ofRandom(0,3));
-        }
+        while(silos[index]->getPctLoaded() == 1.0 )  index =  floor(ofRandom(0,3));
         
     } else {
         
         index = siloIndex;
     }
-    
-    /*
-    int index =  floor(ofRandom(0,3));
-	
-	while(silos[index]->getPctLoaded() != 1.0 ) {
-		index =  floor(ofRandom(0,3));
-	}
-     */
-    
+       
 	silos[index]->addRandomPoint();
     
    
@@ -176,33 +172,12 @@ void silosManager::addRandomParticle (string siloNumber) {
 
 void silosManager::deleteRandomParticle(string siloNumber) {
     
-    /*
-    int index;
-    int i = 0;
-    
-    for (  i=0; i<3; i++ ) {
-        
-        char strIndex = siloNumber.at(i);
-        index = atoi(&strIndex);
-        if ( silos[index]->getPctLoaded() != 0.0 ) break;
-        
-    }
-    
-    silos[index]->pManager.removeLastParticle();
-    */
-	
-	
+  	
 	// delete randomly
     
     int index =  floor(ofRandom(0,3));
-   // ofLog(OF_LOG_NOTICE, "index : %d", index);
-	while(silos[index]->getPctLoaded() == 0.0 ) {
-		index =  floor(ofRandom(0,3));
-	}
-    
-   
-    
-	silos[index]->pManager.removeLastParticle();
+	while(silos[index]->getPctLoaded() == 0.0 ) index =  floor(ofRandom(0,3));
+    silos[index]->pManager.removeLastParticle();
    
 }
 
@@ -211,57 +186,42 @@ void silosManager::setMainColor(vector<ofColor*> * colors) {
     currentColors.clear();
     for ( int i=0; i<3; i++ ) {
         currentColors.push_back(colors->at(i));
+        
+        ofColor * color = colors->at(i);
+        
+         for ( int j=0; j<3; j++ ) {
+             
+            ofxTween * tween = tweens[i * 3 + j];
+            tween->setParameters(quint, ofxTween::easeOut, (float)silos[i]->pManager.mainColor.v[j], (float)color->v[j], 4000.0, 0);
+
+         }
+        
     }
-    
-    for ( int i=0; i<3; i++ ) {
-        
-        
-       // currentColors
-        
-        /*
-        silos[i]->pManager.mainColor.r = colors->at(i)->r;
-        silos[i]->pManager.mainColor.g = colors->at(i)->g;
-        silos[i]->pManager.mainColor.b = colors->at(i)->b;
-         */
-    }
+   
 }
 
 void silosManager::updateColors() {
     
     if(currentColors.size() == 0 ) return;
     
-     for ( int i=0; i<3; i++ ) {
-         
-         //this[prop] = int(blurRate * this[prop] + (1 - blurRate) * targetVal);
-         
-         silos[i]->pManager.mainColor.r = blurColorRate *  silos[i]->pManager.mainColor.r + ( 1-blurColorRate) * currentColors[i]->r;
-         silos[i]->pManager.mainColor.g = blurColorRate *  silos[i]->pManager.mainColor.g + ( 1-blurColorRate) * currentColors[i]->g;
-         silos[i]->pManager.mainColor.b = blurColorRate *  silos[i]->pManager.mainColor.b + ( 1-blurColorRate) * currentColors[i]->b;
-         
-       //  silos[i]->pManager.mainColor.r = currentColors[i]->r;
-       //  silos[i]->pManager.mainColor.g = currentColors[i]->g;
-        // silos[i]->pManager.mainColor.b = currentColors[i]->b;
-            
-     }
+    for ( int i=0; i<3; i++ ) {
+        for ( int j=0; j<3; j++ ) {
+            ofxTween * tween = tweens[i * 3 + j];
+            silos[i]->pManager.mainColor.v[j] = tween->update();            
+        }
+        
+    }
     
-    float color = silos[0]->pManager.mainColor.r;
-    
-   // ofLog(OF_LOG_NOTICE, "color %f", color);
-    
-    
+       
 }
 
 float silosManager::getPctLoaded() {
     
     float totalPct = 0.0;
-    for ( int i=0; i<3; i++ ) {
-        
+    
+    for ( int i=0; i<3; i++ ) 
         totalPct += silos[i]->getPctLoaded();
-        
-       
-        
-    }
-      
+           
     return totalPct / 3.0;
 }
 
@@ -283,7 +243,21 @@ float silosManager::getNextPct () {
     return totalPct / 3.0;    
 }
 
-float getBoundingBox () {
+
+
+/*
+ * For debug purposes
+ */
+
+void silosManager::drawWhiteRect (int x, int y) {
     
-    return 0.0;    
+    
+    
+    int _w = ( silos[0]->pManager.polyBound.getBoundingBox().width) * 3;
+    int _h = ( silos[0]->pManager.polyBound.getBoundingBox().height);
+    
+    ofSetColor(255, 255, 255);
+    ofRect(x, y, _w, _h);
+    
 }
+    

@@ -19,11 +19,13 @@ void entreTempsApp::setup() {
     timer.startTimer();
     
     silos.setup();
+    silos.setGridSpacing(4.0);
     
     pct = 0.0;
     
+    ofLog(OF_LOG_NOTICE, "hmm");
     
-    //fbo.allocate();
+    bDrawDebug = true;
     
 }
 void entreTempsApp::update() {
@@ -33,17 +35,23 @@ void entreTempsApp::update() {
     
 }
 void entreTempsApp::draw() {
+    
     if(!time.bOnline) return;
     
+      
     ofPushMatrix();
-    ofTranslate(294, 214 - 1);
-    silos.draw();
     
-    drawDebug();
+    
+    // basic translation to go 1:1
+    ofTranslate(-silos.spacing+1,  - 1);
+    // offset
+    //ofTranslate(486 - silos.spacing, 358 - 1);
+    silos.draw();
+  
+    if(bDrawDebug ) drawDebug();
+       
     ofPopMatrix();
     
-    
-    silos.drawFbo();
     
 }
 
@@ -62,12 +70,13 @@ void entreTempsApp::drawDebug() {
     
     string clientConnected = (tcp.bHasClientConnected) ? "YES" : "NO";
     ofDrawBitmapString("Has client connected : " + clientConnected, 0, 115);
-    
+    ofDrawBitmapString("Fps: " + ofToString(ofGetFrameRate()), 0, 135);
     
 }
 
 void entreTempsApp::onMainTimer(int & e) {
         
+    
     data.update(time.update());
     if(!time.bOnline) return;
    
@@ -87,20 +96,24 @@ void entreTempsApp::onMainTimer(int & e) {
     // stable
    
     silos.setMainColor(data.getColorForSilo(nextEventData->typeID));
-   
+     
+    // exception if we're at 1%
+    // we should fill to the top dude
+    
+    if(pct == 1.0 && silos.getPctLoaded() < pct ) {
+        silos.addRandomParticle(nextEventData->siloNumber);
+        return;
+    }
       
     
     if ( pct >= silos.getPctLoaded() && pct < silos.getNextPct() ) {
-        // stable
-        
-        
+        // stable             
     } else {
-   
+        
     
         if ( silos.getPctLoaded() < pct ) {
             silos.addRandomParticle(nextEventData->siloNumber);
             return;
-            //ofLog(OF_LOG_NOTICE, "Add ptc! ");
         } 
         
         if (  silos.getNextPct() > pct) {
@@ -108,7 +121,6 @@ void entreTempsApp::onMainTimer(int & e) {
             // things are going empty.
             // we should let the program know that somehting is going on here
             
-                       
             silos.setMainColor(data.getColorForSilo(data.getFinishedEventData()->typeID));
             silos.deleteRandomParticle(nextEventData->siloNumber);
             return;
@@ -123,8 +135,4 @@ void entreTempsApp::onMainTimer(int & e) {
     
 }
 
-void entreTempsApp::drawFbo () {
-    
-    
-    
-}
+

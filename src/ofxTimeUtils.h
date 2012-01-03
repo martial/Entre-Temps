@@ -1,9 +1,8 @@
 //
 //  ofxTimeUtils.h
-//  networkUdpReceiverExample
+//  
 //
 //  Created by Martial Geoffre-Rouland on 22/09/2011.
-//  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
 //
 
 #ifndef OFXTMUTLS
@@ -16,19 +15,18 @@ class ofxTimeUtils {
 public:
     
     ofxTimeUtils();
-    int getCurrentDate();
-    int getCurrentDate(long posixTime);
-    
-    int getCurrentMonth();
-    int getCurrentDay();
-    int getCurrentHour();
-    int getCurrentMinut();
-    int getCurrentSecond();
-    
+    string getCurrentDate();
     
     int convertHoursToSeconds(int hour, int minuts);
     int convertHoursToSeconds(int hour);
     int convertMinutsToSeconds(int minuts);
+    
+    void update(long unixTime);
+    void update(ofEventArgs & e);
+    
+private:
+    
+    int currentUnixTime, currentYear, currentMonth,currentDay, currentHour, currentMinut;
     
 };
 

@@ -24,7 +24,6 @@ public:
     void setup();
     void update();
     void draw();
-    void drawFbo();
     
     void onMainTimer(int & e);
     
@@ -32,6 +31,7 @@ public:
     
     silosManager        silos;
     
+    bool bDrawDebug;
     float pct;
     
     private :
@@ -42,9 +42,7 @@ public:
     timeManager         time;
     
     ofxTimer            timer;
-    
-    ofFbo               fbo;
-    
+        
     
 };
 

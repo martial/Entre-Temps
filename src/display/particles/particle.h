@@ -24,11 +24,9 @@ public:
     void update();
        
     void checkCollision();
-    void checkCollision(float x, float y);
     void checkCollision (ofVec2f pnt);
     void resetForce();
     void addDampingForce();
-    void addRepulsionForce(ofVec2f pnt, float radius, float scale);
     void addForce(float x, float y);
     
     ofxVec2f frc; 

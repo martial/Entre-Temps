@@ -27,25 +27,38 @@ void dataManager::createColors () {
     vector<ofColor*> colors3;
     vector<ofColor*> colors4;
     
-    colors0.push_back(new ofColor(0,67,255));
+    
+    // rire
+    
+    colors0.push_back(new ofColor(91,0,252));
     colors0.push_back(new ofColor(255,238,0));
     colors0.push_back(new ofColor(255,70, 67));
     
+    
+    // theatre
+    
     colors1.push_back(new ofColor(255,78,0));
     colors1.push_back(new ofColor(249,121,0));
-    colors1.push_back(new ofColor(255,182,0));
+    colors1.push_back(new ofColor(255,199,5));
     
-    colors2.push_back(new ofColor(255,255,255));
-    colors2.push_back(new ofColor(255,248,47));
-    colors2.push_back(new ofColor(194,255,0));
+    // classique
+    
+    colors2.push_back(new ofColor(214,255,255));
+    colors2.push_back(new ofColor(0,241,255));
+    colors2.push_back(new ofColor(0,0,243));
+    
+    // variet'
     
     colors3.push_back(new ofColor(247,105,1));
     colors3.push_back(new ofColor(255,0,0));
     colors3.push_back(new ofColor(255,51,68));
     
-    colors4.push_back(new ofColor(0, 115, 199));
-    colors4.push_back(new ofColor(0,241,255));
-    colors4.push_back(new ofColor(0,0,243));
+    
+    // decouverte
+    
+    colors4.push_back(new ofColor(255, 255, 255));
+    colors4.push_back(new ofColor(255,248,47));
+    colors4.push_back(new ofColor(19,255,0));
     
 
     colors.push_back(colors0);

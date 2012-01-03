@@ -11,6 +11,7 @@
 
 #include "ofMain.h"
 #include "silo.h"
+#include "ofxTween.h"
 
 class silosManager {
         
@@ -19,7 +20,10 @@ public:
     void setup();
     void update();
     void draw();
-    void drawFbo();
+    void drawFbo(int x, int y);
+    
+    void  setGridSpacing(float spacing);
+    void setEffect(int id);
     
     void onMainTimer();
     void addRandomParticle(string siloNumber);
@@ -28,11 +32,11 @@ public:
     void setMainColor(vector<ofColor*> * colors);
     void updateColors();
     
+    void drawWhiteRect(int x, int y);
     
     float getPctLoaded();
     float getNextPct();
     
-    float getBoundingBox();
     
     vector<silo*>   silos;
     ofFbo           fbo;
@@ -47,8 +51,15 @@ public:
     
     vector<ofColor*> currentColors;
     
+    float           spacing;
+    
     float           blurColorRate;
     
+    ofxEasingQuint      quint;
+    vector<ofxTween*>    tweens;
+    
+    ofShader posShader;
+    int     effectId;
     
 };
 
